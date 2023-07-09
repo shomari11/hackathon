@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "JasonTaylorDev",
+  "classifications": [
+    "Web",
+    "SPA",
+    "ASP.NET",
+    "Clean Architecture"],
+  "name": "Clean Architecture Solution",
+  "description": "A Clean Architecture Solution Template for creating a Single-Page Application (SPA) with ASP.NET Core.",
+  "identity": "Clean.Architecture.Solution.CSharp",
+  "groupIdentity": "Clean.Architecture.Solution",
+  "shortName": "ca-sln",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "CleanArchitecture",
+  "preferNameDirectory": true,
+  "symbols": {
+    "ClientFramework": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "Angular",
+          "description": "Use Angular"
+        },
+        {
+          "choice": "React",
+          "description": "Use React"
+        },
+        {
+          "choice": "None",
+          "description": "Web API only"
+        }
+      ],
+      "defaultValue": "Angular",
+      "description": "The type of client framework to use"
+    },
+    "UseAngular": {
+      "type": "computed",
+      "value": "(ClientFramework == \"Angular\")"
+    },
+    "UseReact": {
+      "type": "computed",
+      "value": "(ClientFramework == \"React\")"
+    },
+    "UseApiOnly": {
+      "type": "computed",
+      "value": "(ClientFramework == \"None\")"
+    },
+    "UseSQLite": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Whether to use SQLite instead of LocalDB."
+    },
+    "UseLocalDB": {
+      "type": "computed",
+      "value": "(!UseSQLite)"
+    },
+    "WebProjectName": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "WebUI",
+      "parameters": {
+        "evaluator": "C++",
+        "datatype": "text",
+        "cases": [
+          {
+            "condition": "(UseApiOnly)",
+            "value": "WebApi"
+          },
+          {
+            "condition": "",
+            "value": "WebUI"
+          }
+        ]
+      }
+    }
+  },
+  "sources": [
+    {
+      "source": "./",
+      "target": "./",
+      "exclude": [
+        "README.md",
+        "**/[Bb]in/**",
+        "**/[Oo]bj/**",
+        ".template.config/**/*",
+        "templates/**/*",
+        ".vs/**/*",
+        "**/*.filelist",
+        "**/*.user",
+        "**/*.lock.json",
+        "**/.git/**",
+        "*.nuspec",
+        "**/node_modules/**",
+        "**/web-api-client.ts",
+        "src/WebUI/wwwroot/api/**"
+      ],
+      "modifiers": [
+        {
+          "condition": "(UseAngular)",
+          "exclude": [
+            "src/WebUI/config-react.nswag",
+            "src/WebUI/config-webapi.nswag",
+            "src/WebUI/ClientApp-React/**",
+            "src/WebUI/Templates/**"
+          ]
+        },
+        {
+          "condition": "(UseReact)",
+          "exclude": [
+            "src/WebUI/config.nswag",
+            "src/WebUI/config-webapi.nswag",
+            "src/WebUI/ClientApp/**"
+          ],
+          "rename": {
+            "config-react.nswag": "config.nswag",
+            "ClientApp-React": "ClientApp"
+          }
+        },
+        {
+          "condition": "(UseApiOnly)",
+          "exclude": [
+            "src/WebUI/config.nswag",
+            "src/WebUI/ClientApp/**",
+            "src/WebUI/config-react.nswag",
+            "src/WebUI/ClientApp-React/**",
+            "src/WebUI/Templates/**",
+            "tests/WebUI.AcceptanceTests/**"
+          ],
+          "rename": {
+            "config-webapi.nswag": "config.nswag",
+            "WebUI": "WebApi"
+          }
+        },
+        {
+          "condition": "(UseLocalDB)",
+          "exclude": [
+            "src/Infrastructure/Data/SQLite/**",
+            "src/WebUI/appsettings.SQLite.json",
+            "src/WebUI/app.db",
+            "tests/Application.IntegrationTests/TestDatabase.Sqlite.cs"
+          ]
+        },
+        {
+          "condition": "(UseSQLite)",
+          "exclude": [
+            "src/Infrastructure/Data/Migrations/**",
+            "src/WebUI/appsettings.json",
+            "tests/Application.IntegrationTests/TestDatabase.cs"
+          ],
+          "rename": {
+            "src/Infrastructure/Data/SQLite/" : "src/Infrastructure/Data/Migrations/",
+            "appsettings.SQLite.json": "appsettings.json",
+            "TestDatabase.Sqlite.cs": "TestDatabase.cs"
+          }
+        }
+      ]
+    }
+  ]
+}
